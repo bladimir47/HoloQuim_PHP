@@ -1,3 +1,45 @@
+<?php
+session_start(); 
+header('Content-Type: text/html; charset=utf-8'); 
+header('Access-Control-Allow-Origin: *');
+include('./conexion/conexion.php');
+$nombre = $_SESSION['nombre'];
+$msg = "";
+$mensaje = "No se cargo";
+$tabla = "";
+if ( $_SESSION['nomg'] == "holo"  ) {
+	if(isset($_POST['subi'])){
+		if ($_FILES['archivo']["error"] > 0)
+		  {
+				echo "Error: " . $_FILES['archivo']['error'] . "<br>";
+				
+		  }	else
+		  {
+			  $titulo = $_POST['titulo'];
+			  $texto = $_POST['conte'];
+			  $msg = "?notificaciones=".$notificacion;
+			  
+				$query = "SELECT count(*) as valor FROM reaccion ";
+				$result = $mysqli->query($query);
+				$obj = $result->fetch_object();
+				$valor = $obj->valor;
+				
+				$nombrearchivo = $valor."_".$_FILES['archivo']['name'];
+			  
+			  move_uploaded_file($_FILES['archivo']['tmp_name'],'./imagenesnoti/'.$nombrearchivo);
+			  
+			  $query = "INSERT INTO reaccion( titulo, texto, dirimagen) VALUES ( '". $titulo ."','".$texto."','".$nombrearchivo."')";
+			  $mysqli->query($query);
+			  unset($query);
+			  
+			  
+			  
+			  $mensaje = "Cargado";
+		  }
+	}
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -53,10 +95,13 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a class="page-scroll" href="#about">Inicio</a>
+                        <a class="page-scroll" href="inicio.php">Inicio</a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="#services">Comentario</a>
+                        <a class="page-scroll" href="reaccion.php">Reaccion</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#">Comentario</a>
                     </li>
                 </ul>
             </div>
@@ -64,63 +109,21 @@
         </div>
         <!-- /.container-fluid -->
     </nav>
+     <br/>
+    <br/>
+    <br/>
+    <form action="reaccion.php" method="post">
+        <div class="row">
+            <div class="container col-md-4">
+            </div>
+            <div class="container col-md-4">
+                <center><button class="btn btn-primary btn-xl page-scroll" id="datos" name="datos"  type="submit"><?=$mensaje;?>,Regresar</button></center>
+            </div>
+        </div >
+    </form>
     <br/>
     <br/>
     <br/>
-    <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-8">
-            <h2>Ingresa un nuevo mecanismo de reacción</h2>          
-        </div>
-    </div>
-    <br />
-    <div class="row">
-      <div class="col-md-1"></div>
-      <div class="col-md-8">
-      
-            <form class="form-inline" action="cargando.php<?=$contenido;?>" method="post" enctype="multipart/form-data">
-              <div class="form-group">
-                <label for="exampleInputName2">Titulo</label>
-                <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Codigo numerico">
-                <label for="exampleInputName2">Contenido</label>
-                <input type="text" class="form-control" id="conte" name="conte" placeholder="Codigo numerico">
-                <input type="file" name="archivo" id="archivo"></input>
-              </div>
-              <button type="submit" name="subi" class="btn btn-danger">Publicar</button>
-            </form>
-            <br>
-      
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-1"></div>
-      <div class="col-md-4">
-            
-            <a href="clientes.php" class="btn btn-warning btn-xs">Regresar....</a>
-      
-      </div>
-    </div>
-    <br />
-    <br />
-    <div class="row">
-      <div class="col-md-1"></div>
-      <div class="col-md-6">
-      
-            <table class="table table-striped">
-                <tr class="danger">
-                    <td>Titulo</td>
-                    <td>Texto</td>
-                    <td>Imagen</td>
-                    <td>Eliminar</td>
-                </tr>
-                <?=$tabla;?>
-            </table>
-      
-      </div>
-    </div>
-
-    
-
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
 
