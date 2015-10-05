@@ -1,12 +1,13 @@
 <?php
 session_start();
-header('Content-Type: text/html; charset=utf-8'); 
+//header('Content-Type: text/html; charset=utf-8'); 
 header('Access-Control-Allow-Origin: *');
 include('./conexion/conexion.php');
 $nombre = $_SESSION['nombre'];
 $contenido ="";
 
 if ( $_SESSION['nomg'] == "holo" ) {
+    $idreaccion = $_GET['idreac'];
     $eliminar = $_POST['eliminar'];
     $contenido = $contenido."?noti=".$clave;
     if($eliminar!=null )
@@ -20,18 +21,15 @@ if ( $_SESSION['nomg'] == "holo" ) {
                         
     } 
     
-    $sql = "SELECT `idreaccion`, `titulo`, `texto`, `dirimagen` FROM `reaccion`";
+    $sql = "SELECT `idejemplos`, `Titulo`, `texto`, `dirvidieo`, `reaccion_idreaccion` FROM `ejemplos` WHERE `reaccion_idreaccion` = ".$idreaccion;
         if ($result = $mysqli->query($sql)) {
             while($obj = $result->fetch_object()){
                 $tabla = $tabla.'<tr>';
-                $tabla = $tabla.'<td>'.$obj->titulo.'</td>';
+                $tabla = $tabla.'<td>'.$obj->Titulo.'</td>';
                 $tabla = $tabla.'<td>'.$obj->texto.'</td>';
-                $tabla = $tabla.'<td>  <img src="./imagenesnoti/'.$obj->dirimagen.'" alt="" width="30" height="30">'.'</td>';
-                $tabla = $tabla.'<td><form action="ejemplos.php?idreac='.$obj->idreaccion.'" method="post">';
-                $tabla = $tabla.'<button class="btn btn-default btn-sm" name="amp" value="'.$obj->idreaccion.'">Ampleacion</button>';
-                $tabla = $tabla.'</form></td>';
-                $tabla = $tabla.'<td><form action="reaccion.php" method="post">';
-                $tabla = $tabla.'<button class="btn btn-default btn-sm" name="eliminar" value="'.$obj->idreaccion.'">Eliminar</button>';
+                $tabla = $tabla.'<td>'.$obj->texto.'</td>';
+                $tabla = $tabla.'<td><form action="ejemplos.php?idreac="'.$idreaccion.' method="post">';
+                $tabla = $tabla.'<button class="btn btn-default btn-sm" name="eliminar" value="'.$obj->idejemplos.'">Eliminar</button>';
                 $tabla = $tabla.'</form></td>';
                 $tabla = $tabla.'</tr>';
             }
@@ -72,6 +70,46 @@ if ( $_SESSION['nomg'] == "holo" ) {
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/creative.css" type="text/css">
+    <script src="js/jquery-2.0.2.js"></script>
+    <script src="js/upload.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+            function subirArchivos() {
+                $("#archivo").upload('subir_archivo.php',
+                {
+                    nombre_archivo: $("#video").val()
+                },
+                function(respuesta) {
+                    //Subida finalizada.
+                    $("#barra_de_progreso").val(0);
+                    if (respuesta !== 0) {
+                        mostrarRespuesta('El archivo ha sido subido correctamente.', true);
+                        $("#video #archivo").val(''+respuesta);
+                    } else {
+                        mostrarRespuesta('El archivo NO se ha podido subir.', false);
+                    }
+                    
+                }, function(progreso, valor) {
+                    //Barra de progreso.
+                    $("#barra_de_progreso").val(valor);
+                });
+            }            
+            function mostrarRespuesta(mensaje, ok){
+                $("#respuesta").removeClass('alert-success').removeClass('alert-danger').html(mensaje);
+                if(ok){
+                    $("#respuesta").addClass('alert-success');
+                }else{
+                    $("#respuesta").addClass('alert-danger');
+                }
+            }
+            $(document).ready(function() {
+                
+                $("#boton_subir").on('click', function() {
+                    subirArchivos();
+                });
+            });
+        </script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -104,7 +142,7 @@ if ( $_SESSION['nomg'] == "holo" ) {
                         <a class="page-scroll" href="inicio.php">Inicio</a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="#">Reaccion</a>
+                        <a class="page-scroll" href="reaccion.php">Reaccion</a>
                     </li>
                     <li>
                         <a class="page-scroll" href="#">Comentario</a>
@@ -129,23 +167,37 @@ if ( $_SESSION['nomg'] == "holo" ) {
       <div class="col-md-1"></div>
       <div class="col-md-6">
       
-            <form  action="cargando.php" method="post" enctype="multipart/form-data">
+            <form  action="cargandovideo.php?idreac=<?=$idreaccion;?> "method="post" enctype="multipart/form-data">
               <div >
                 <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Titulo">
                 <br/>
                 <input type="text" class="form-control" id="conte" name="conte" placeholder="Texto">
                 <br/>
-                <input type="file" name="archivo" id="archivo"></input>
+                <input type="text" class="form-control" id="video" name="video" placeholder="Video" disabled>
                 <br/>
+                
+
               </div>
+              <br />
               <button type="submit" name="subi" class="btn btn-danger">Publicar</button>
             </form>
+
+            <form action="javascript:void(0);" method="post" enctype="multipart/form-data">
+                <input type="file" name="archivo" id="archivo"></input>
+                <input type="submit" id="boton_subir" value="Subir" class="btn btn-success" />
+                <progress id="barra_de_progreso" value="0" max="100"></progress>
+                <br/>
+            </form>
+            <br/>
+            <br>
+            <br>
+            
+
             <br>
       
       </div>
     </div>
     <br />
-    <?=$t;?>
     <br />
     <div class="row">
       <div class="col-md-1"></div>
@@ -155,8 +207,7 @@ if ( $_SESSION['nomg'] == "holo" ) {
                 <tr class="danger">
                     <td>Titulo</td>
                     <td>Texto</td>
-                    <td>Imagen</td>
-                    <td>Amplear</td>
+                    <td>Video</td>
                     <td>Eliminar</td>
                 </tr>
                 <?=$tabla;?>

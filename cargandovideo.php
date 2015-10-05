@@ -1,48 +1,27 @@
 <?php
-session_start();
+session_start(); 
 header('Content-Type: text/html; charset=utf-8'); 
 header('Access-Control-Allow-Origin: *');
 include('./conexion/conexion.php');
 $nombre = $_SESSION['nombre'];
-$contenido ="";
-
-if ( $_SESSION['nomg'] == "holo" ) {
-    $eliminar = $_POST['eliminar'];
-    $contenido = $contenido."?noti=".$clave;
-    if($eliminar!=null )
-    {
-        $query = "SELECT `dirimagen` FROM `reaccion` WHERE `idreaccion` = ".$eliminar;
-        $result = $mysqli->query($query);
-        $obj = $result->fetch_object();
-        unlink('./imagenesnoti/'.$obj->dirimagen);
-        $query = "DELETE FROM `reaccion` WHERE `idreaccion` = ".$eliminar;
-        $mysqli->query($query);
-                        
-    } 
-    
-    $sql = "SELECT `idreaccion`, `titulo`, `texto`, `dirimagen` FROM `reaccion`";
-        if ($result = $mysqli->query($sql)) {
-            while($obj = $result->fetch_object()){
-                $tabla = $tabla.'<tr>';
-                $tabla = $tabla.'<td>'.$obj->titulo.'</td>';
-                $tabla = $tabla.'<td>'.$obj->texto.'</td>';
-                $tabla = $tabla.'<td>  <img src="./imagenesnoti/'.$obj->dirimagen.'" alt="" width="30" height="30">'.'</td>';
-                $tabla = $tabla.'<td><form action="ejemplos.php?idreac='.$obj->idreaccion.'" method="post">';
-                $tabla = $tabla.'<button class="btn btn-default btn-sm" name="amp" value="'.$obj->idreaccion.'">Ampleacion</button>';
-                $tabla = $tabla.'</form></td>';
-                $tabla = $tabla.'<td><form action="reaccion.php" method="post">';
-                $tabla = $tabla.'<button class="btn btn-default btn-sm" name="eliminar" value="'.$obj->idreaccion.'">Eliminar</button>';
-                $tabla = $tabla.'</form></td>';
-                $tabla = $tabla.'</tr>';
-            }
-        }
-        $result->close();
-        unset($obj);
-        unset($sql);
-        unset($query);
-        echo $textos;
-    
-    
+$msg = "";
+$mensaje = "No se cargo";
+$tabla = "";
+if ( $_SESSION['nomg'] == "holo"  ) {
+	if(isset($_POST['subi'])){
+			
+			  $titulo = $_POST['titulo'];
+			  $texto = $_POST['conte'];
+              $viedo = $_POST['ppp'];
+              $idreaccion = $_GET['idreac'];
+			  
+			  $query = "INSERT INTO `ejemplos`( `Titulo`, `texto`, `dirvidieo`, `reaccion_idreaccion`) VALUES ( '". $titulo ."','".$texto."','".$viedo."',".$idreaccion.")";
+			  $mysqli->query($query);
+			  unset($query);
+			  
+			  $mensaje = "Agregado";
+		  
+	}
 }
 ?>
 
@@ -104,7 +83,7 @@ if ( $_SESSION['nomg'] == "holo" ) {
                         <a class="page-scroll" href="inicio.php">Inicio</a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="#">Reaccion</a>
+                        <a class="page-scroll" href="reaccion.php">Reaccion</a>
                     </li>
                     <li>
                         <a class="page-scroll" href="#">Comentario</a>
@@ -115,58 +94,21 @@ if ( $_SESSION['nomg'] == "holo" ) {
         </div>
         <!-- /.container-fluid -->
     </nav>
-    <br />
-    <br />
-    <br />
-    <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-8">
-            <h2>Ingresa un nuevo mecanismo de reacción</h2>          
-        </div>
-    </div>
-    <br />
-    <div class="row">
-      <div class="col-md-1"></div>
-      <div class="col-md-6">
-      
-            <form  action="cargando.php" method="post" enctype="multipart/form-data">
-              <div >
-                <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Titulo">
-                <br/>
-                <input type="text" class="form-control" id="conte" name="conte" placeholder="Texto">
-                <br/>
-                <input type="file" name="archivo" id="archivo"></input>
-                <br/>
-              </div>
-              <button type="submit" name="subi" class="btn btn-danger">Publicar</button>
-            </form>
-            <br>
-      
-      </div>
-    </div>
-    <br />
-    <?=$t;?>
-    <br />
-    <div class="row">
-      <div class="col-md-1"></div>
-      <div class="col-md-6">
-      
-            <table class="table table-striped">
-                <tr class="danger">
-                    <td>Titulo</td>
-                    <td>Texto</td>
-                    <td>Imagen</td>
-                    <td>Amplear</td>
-                    <td>Eliminar</td>
-                </tr>
-                <?=$tabla;?>
-            </table>
-      
-      </div>
-    </div>
-
-    
-
+     <br/>
+    <br/>
+    <br/>
+    <form action="reaccion.php" method="post">
+        <div class="row">
+            <div class="container col-md-4">
+            </div>
+            <div class="container col-md-4">
+                <center><button class="btn btn-primary btn-xl page-scroll" id="datos" name="datos"  type="submit"><?=$mensaje;?>,Regresar</button></center>
+            </div>
+        </div >
+    </form>
+    <br/>
+    <br/>
+    <br/>
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
 
