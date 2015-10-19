@@ -27,7 +27,7 @@ if ( $_SESSION['nomg'] == "holo" ) {
                 $tabla = $tabla.'<tr>';
                 $tabla = $tabla.'<td>'.$obj->Titulo.'</td>';
                 $tabla = $tabla.'<td>'.$obj->texto.'</td>';
-                $tabla = $tabla.'<td><a href="http://chocolatescript.tk/holoquim/videoejemplo/'.$obj->dirvidieo.'"  target="_blank" class="btn btn-success btn-xs">Descargar archivo</a></td>';
+                $tabla = $tabla.'<td><a href="'.$obj->dirvidieo.'"  target="_blank" class="btn btn-success btn-xs">Ver Video</a></td>';
                 $tabla = $tabla.'<td><form action="ejemplos.php?idreac="'.$idreaccion.' method="post">';
                 $tabla = $tabla.'<button class="btn btn-default btn-sm" name="eliminar" value="'.$obj->idejemplos.'">Eliminar</button>';
                 $tabla = $tabla.'</form></td>';
@@ -194,22 +194,13 @@ if ( $_SESSION['nomg'] == "holo" ) {
                 <br/>
                 <input type="text" class="form-control" id="conte" name="conte" placeholder="Texto">
                 <br/>
-                <input type="text" class="form-control" id="ppp" name="ppp" placeholder="Video">
+                <input type="text" class="form-control" id="ppp" name="ppp" placeholder="Link Video Youtube">
                 <br/>
               </div>
               <br />
               <button type="submit" name="subi" class="btn btn-danger">Publicar</button>
             </form>
-            <br>
-            <form action="javascript:void(0);">
-                <div class="row">
-                    <div class="col-md-6">
-                        <input type="file" name="archivo" id="archivo" />
-                        <input type="submit" id="boton_subir" value="Subir" class="btn btn-success" />
-                        <progress id="barra_de_progreso" value="0" max="100"></progress>
-                    </div>
-                </div>
-            </form>      
+            <br>    
       </div>
     </div>
     <br>
